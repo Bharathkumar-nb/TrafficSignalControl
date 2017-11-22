@@ -1,0 +1,97 @@
+const False = 0
+const True = 1
+
+range Bool = 0..1
+
+range Cars = 1..4
+
+range Lanes = 1..2
+/*
+        qz1   x
+
+    x   cz1  cz2   qz2
+
+   qz4  cz3  cz4   x
+
+         x  qz3
+
+*/
+
+/*
+
+For HILIST and LOWLIST I am using boolean flags: 3 for HILIST and 3 for LOWLIST. True means that a
+specific car is in one of the lists. Assumes I know there are 4 cars and I know their IDs. Wu does *not*
+make these assumptions.
+
+Note 1: I will have to write 4 separate WU_CAR processes for 1,2,3,4. Probably can generalize at some point.
+Maybe using ID as process var and then mod operator for other car ids? Will make WAIT_RESPONSE more complicated
+with nested ifs to sort out priority. I avoid this because I know car 1 is lower than everyone else.
+
+Note 2: Treating whole grid as one non-sharable resource. Not efficient.
+
+Note 3. I am using car id as priority. Wu uses a clock. Low id cars could get locked out under my scheme. You can
+use stress testing ala the warring neighbors to show this.
+
+Note 4. You can use stress testing to make sure time_out is long enough - make it low priority.
+
+Note 5. I find it useful to model like this to try to sort out what Wu is proposing. No guarentees that I
+have concordance :)
+
+*/
+
+WU_CAR_1 = STARTUP,
+
+STARTUP = (choose_lane[1][l:Lanes] -> CAR[0][0][0][0][0][0][l]), //HILIST and LOWLIST
+
+CAR[hl2:Bool][hl3:Bool][hl4:Bool][ll2:Bool][ll3:Bool][ll4:Bool][l:Lanes]
+			=(
+			send_request[1][2][l]  //car 1 asks for permission to use lane l
+			-> send_request[1][3][l] 
+			-> send_request[1][4][l] 
+			-> WAIT_RESPONSE[hl2][hl3][hl4][ll2][ll3][ll4][l]
+			  ),
+WAIT_RESPONSE[hl2:Bool][hl3:Bool][hl4:Bool][ll2:Bool][ll3:Bool][ll4:Bool][l:Lanes] = (
+			receive_request[2][1][Lanes] -> send_permission[1][2] -> WAIT_RESPONSE[True][hl3][hl4][ll2][ll3][ll4][l] |
+			receive_request[3][1][Lanes] -> send_permission[1][3] -> WAIT_RESPONSE[hl2][True][hl4][ll2][ll3][ll4][l] |
+			receive_request[4][1][Lanes] -> send_permission[1][4] -> WAIT_RESPONSE[hl2][hl3][True][ll2][ll3][ll4][l] |
+
+			receive_permission[2][1] -> WAIT_RESPONSE[False][hl3][hl4][ll2][ll3][ll4][l] |
+			receive_permission[3][1] -> WAIT_RESPONSE[hl2][False][hl4][ll2][ll3][ll4][l] |
+			receive_permission[4][1] -> WAIT_RESPONSE[hl2][hl3][False][ll2][ll3][ll4][l] |
+
+			time_out[1] -> WAIT_PERMISSION[hl2][hl3][hl4][ll2][ll3][ll4][l]
+		),
+WAIT_PERMISSION[hl2:Bool][hl3:Bool][hl4:Bool][ll2:Bool][ll3:Bool][ll4:Bool][l:Lanes] = (
+			when(!hl2 && !hl3 && !hl4) enter[1] -> CRITICAL[ll2][ll3][ll4][l] |
+			when(hl2) receive_permission[2][1] -> WAIT_PERMISSION[False][hl3][hl4][ll2][ll3][ll4][l] |
+			when(hl3) receive_permission[3][1] -> WAIT_PERMISSION[hl2][False][hl4][ll2][ll3][ll4][l] |
+			when(hl4) receive_permission[4][1] -> WAIT_PERMISSION[hl2][hl3][False][ll2][ll3][ll4][l] |
+
+			receive_request[2][1][Lanes] -> WAIT_PERMISSION[hl2][hl3][hl4][True][ll3][ll4][l] |  //put on LOWLIST
+			receive_request[3][1][Lanes] -> WAIT_PERMISSION[hl2][hl3][hl4][ll2][True][ll4][l] |
+			receive_request[4][1][Lanes] -> WAIT_PERMISSION[hl2][hl3][hl4][ll2][ll3][True][l] 
+		),
+CRITICAL[ll2:Bool][ll3:Bool][ll4:Bool][l:Lanes] = (
+		 	exit[1] -> CLEANUP[ll2][ll3][ll4][l] |
+			go_slow[1] -> CRITICAL[ll2][ll3][ll4][l] |
+
+			receive_request[2][1][Lanes] -> CRITICAL[True][ll3][ll4][l] |  //put on LOWLIST
+			receive_request[3][1][Lanes] -> CRITICAL[ll2][True][ll4][l] |
+			receive_request[4][1][Lanes] -> CRITICAL[ll2][ll3][True][l] 
+		),
+CLEANUP[ll2:Bool][ll3:Bool][ll4:Bool][l:Lanes] = (
+			when(!ll2 && !ll3 && !ll4) restarting[1] -> STARTUP |
+			when(ll2) send_permission[1][2] -> CLEANUP[False][ll3][ll4][l] |
+			when(ll3) send_permission[1][3] -> CLEANUP[ll2][False][ll4][l] |
+			when(ll4) send_permission[1][4] -> CLEANUP[ll2][ll3][False][l]
+		).
+			
+
+||VMEI = (WU_CAR_1). // << enter[4] could lock others out
+
+assert MOVE_THROUGH = []<>exit[Cars]  //car 1 could get locked out
+
+fluent CS[i:Cars] = <enter[i], exit[i]>
+
+assert MUTEX = forall[i:1..3]forall[j:(i+1)..4][]!(CS[i] && CS[j])  //should not fail
+
