@@ -29,14 +29,25 @@ class Car(object):
         self.mqtt_client.connect('sansa.cs.uoregon.edu', '1883',keepalive=300)
         self.mqtt_client.subscribe('TrafficSignalControl/' + 'car')
         self.mqtt_client.loop_start()
+        self.isBroadcast = False
+        self.isWaiting = False
+        self.isPassing = False
 
         signal.signal(signal.SIGINT, self.control_c_handler)
-        self.sendRequest()
+        signal.signal(signal.SIGALRM, self.enter_critical_section)
 
-    def sendCarDetails(self):
-        print(self.car_id+'.Request')
-        self.mqtt_client.publish(self.mqtt_topic, self.car_id+'.Request')
-        time.sleep(3)
+        self.broadcast_request()
+        self.ll = []
+        self.hl = []
+
+    def broadcast_request(self):
+        print(self.car_id+'_'+self.lane_id+'.Request')
+        self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'.Request')
+        self.isBroadcast = True
+        self.isWaiting = True
+        signal.alarm(10)
+
+  
 
     # Deal with control-c
     def control_c_handler(self, signum, frame):
@@ -50,12 +61,44 @@ class Car(object):
     
     def on_message(self, client, userdata, msg):
         if len(msg.payload.split('.')) > 1:
-            msg_car_id, msg_content = msg.payload.split('.')
-            if msg_car_id == self.car_id :
-                if msg_content == 'pick_up' :
-                    self.goForRide()
-                if msg_content == 'Ack':
-                    self.controlAck = True  
+            key, msg_content = msg.payload.split('.')
+
+            if msg_content == 'Request':
+                car_id,lane_id = key.split('_')
+                # missing part
+
+                if car_id == self.car_id and (self.isWaiting or self.isPassing) :
+                    self.ll.append(car_id)
+                    print(self.car_id+'_'+car_id+'.Reject')
+                    self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+car_id+'.Reject')
+
+            if msg_content == 'Reject':
+                src,dest = key.split('_')
+                if self.isWaiting:
+                    if dest == self.car_id:
+                        self.hl.append(src)
+                    else:
+                        # check preemption
+                        pass
+            if msg_content == 'Permit':
+                src = key
+                if src != self.car_id:
+                    self.hl.remove(src)
+                    if self.hl == []:
+                        self.isPassing = True
+                        self.enter_critical_section()
+
+
+    def enter_critical_section(self):
+        time.sleep(3)
+        print(self.car_id+'.Permit')
+        self.mqtt_client.publish(self.mqtt_topic, self.car_id+'.Permit')
+        
+
+
+
+
+            
 
 
     def on_disconnect(self, client, userdata, rc):
