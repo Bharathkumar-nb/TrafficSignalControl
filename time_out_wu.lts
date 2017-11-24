@@ -1,0 +1,116 @@
+const False = 0
+const True = 1
+
+
+range Bool = 0..1
+
+range Cars = 1..4
+
+range Lanes = 1..4
+/*
+        qz1   x
+
+    x   cz1  cz2   qz2
+
+   qz4  cz3  cz4   x
+
+         x  qz3
+
+*/
+
+
+/*
+
+For HILIST and LOWLIST I am using boolean flags: 3 for HILIST and 3 for LOWLIST. True means that a
+specific car is in one of the lists. Assumes I know there are 4 cars and I know their IDs. Wu does *not*
+make these assumptions.
+
+Note 1: I will have to write 4 separate WU_CAR processes for 1,2,3,4. Probably can generalize at some point.
+Maybe using ID as process var and then mod operator for other car ids? Will make WAIT_RESPONSE more complicated
+with nested ifs to sort out priority. I avoid this because I know car 1 is lower than everyone else.
+
+Note 2: Treating whole grid as one non-sharable resource. Not efficient.
+
+Note 3. I am using car id as priority. Wu uses a clock. Low id cars could get locked out under my scheme. You can
+use stress testing ala the warring neighbors to show this.
+
+Note 4. You can use stress testing to make sure time_out is long enough - make it low priority.
+
+Note 5. I find it useful to model like this to try to sort out what Wu is proposing. No guarentees that I
+have concordance :)
+
+*/
+
+WU_CAR(N=0) = STARTUP[False],
+
+STARTUP[b:Bool] = (choose_lane[N][l:Lanes] -> CAR[0][0][0][0][0][0][l][b][0]), //HILIST and LOWLIST
+
+CAR[hl1:Bool][hl2:Bool][hl3:Bool][ll1:Bool][ll2:Bool][ll3:Bool][l:Lanes][b:Bool][mr:Bool]
+			=(
+			when (!b) broadcast_request[N][l]-> CAR[hl1][hl2][hl3][ll1][ll2][ll3][l][True][mr]|
+
+			receive_request[(N+0)%4+1][c_l:Lanes] ->  /*log[N][(N+0)%4+1] -> */if (((N+0)%4+1) < N) then
+														 (/*log_inside[N][(N+0)%4+1] -> */send_reject[N][(N+0)%4+1] -> CAR[hl1][hl2][hl3][True][ll2][ll3][l][b][mr])
+													  else
+														  CAR[hl1][hl2][hl3][ll1][ll2][ll3][l][b][mr]|
+			receive_request[(N+1)%4+1][c_l:Lanes] ->  /*log[N][(N+1)%4+1] -> */if (((N+1)%4+1) < N) then
+														 (/*log_inside[N][(N+1)%4+1] -> */send_reject[N][(N+1)%4+1] -> CAR[hl1][hl2][hl3][ll1][True][ll3][l][b][mr])
+													  else
+														  CAR[hl1][hl2][hl3][ll1][ll2][ll3][l][b][mr]|
+			receive_request[(N+2)%4+1][c_l:Lanes] ->  /*log[N][(N+2)%4+1] -> */if (((N+2)%4+1) < N) then
+														 (/*log_inside[N][(N+2)%4+1] -> */send_reject[N][(N+2)%4+1] -> CAR[hl1][hl2][hl3][ll1][ll2][True][l][b][mr])
+													  else
+														  CAR[hl1][hl2][hl3][ll1][ll2][ll3][l][b][mr]|
+
+			when (b && (N+0)%4+1 > N) receive_permit[(N+0)%4+1] ->    CAR[False][hl2][hl3][ll1][ll2][ll3][l][b][mr] |
+			when (b && (N+1)%4+1 > N) receive_permit[(N+1)%4+1] ->    CAR[hl1][False][hl3][ll1][ll2][ll3][l][b][mr] |
+			when (b && (N+2)%4+1 > N) receive_permit[(N+2)%4+1] ->    CAR[hl1][hl2][False][ll1][ll2][ll3][l][b][mr] |
+
+			when (b && (N+0)%4+1 > N) receive_reject[(N+0)%4+1][N] ->   CAR[True][hl2][hl3][ll1][ll2][ll3][l][b][True] |
+			when (b && (N+1)%4+1 > N) receive_reject[(N+1)%4+1][N] ->   CAR[hl1][True][hl3][ll1][ll2][ll3][l][b][True] |
+			when (b && (N+2)%4+1 > N) receive_reject[(N+2)%4+1][N] ->   CAR[hl1][hl2][True][ll1][ll2][ll3][l][b][True] |
+
+			when (b && mr && !hl1 && !hl2 && !hl3) enter[N] -> CRITICAL[ll1][ll2][ll3] |
+			when (b && !mr && !hl1 && !hl2 && !hl3) time_out[N] -> enter[N] -> CRITICAL[ll1][ll2][ll3]
+		),
+/*
+WAIT_PERMISSION[hl2:Bool][hl3:Bool][hl4:Bool][ll2:Bool][ll3:Bool][ll4:Bool][l:Lanes] = (
+			when(!hl2 && !hl3 && !hl4) enter[1] -> CRITICAL[ll2][ll3][ll4][l] |
+			when(hl2) receive_permission[2][1] -> WAIT_PERMISSION[False][hl3][hl4][ll2][ll3][ll4][l] |
+			when(hl3) receive_permission[3][1] -> WAIT_PERMISSION[hl2][False][hl4][ll2][ll3][ll4][l] |
+			when(hl4) receive_permission[4][1] -> WAIT_PERMISSION[hl2][hl3][False][ll2][ll3][ll4][l] |
+
+			receive_request[2][1][Lanes] -> WAIT_PERMISSION[hl2][hl3][hl4][True][ll3][ll4][l] |  //put on LOWLIST
+			receive_request[3][1][Lanes] -> WAIT_PERMISSION[hl2][hl3][hl4][ll2][True][ll4][l] |
+			receive_request[4][1][Lanes] -> WAIT_PERMISSION[hl2][hl3][hl4][ll2][ll3][True][l] 
+		),
+*/
+CRITICAL[ll1:Bool][ll2:Bool][ll3:Bool] = (
+		 	exit[N] -> if(ll1 || ll2 || ll3) then (send_permit[N] -> STARTUP[True])
+					   else  STARTUP[True] |
+			go_slow[N] -> CRITICAL[ll1][ll2][ll3] |
+			receive_request[(N+0)%4+1][c_l:Lanes] ->  /*log[N][(N+0)%4+1] -> */if (((N+0)%4+1) < N) then
+														 (/*log_inside[N][(N+0)%4+1] -> */send_reject[N][(N+0)%4+1] -> CRITICAL[ll1][ll2][ll3])
+													  else
+														  CRITICAL[ll1][ll2][ll3]|
+			receive_request[(N+1)%4+1][c_l:Lanes] ->  /*log[N][(N+1)%4+1] -> */if (((N+1)%4+1) < N) then
+														 (/*log_inside[N][(N+1)%4+1] -> */send_reject[N][(N+1)%4+1] -> CRITICAL[ll1][ll2][ll3])
+													  else
+														  CRITICAL[ll1][ll2][ll3]|
+			receive_request[(N+2)%4+1][c_l:Lanes] ->  /*log[N][(N+2)%4+1] -> */if (((N+2)%4+1) < N) then
+														 (/*log_inside[N][(N+2)%4+1] -> */send_reject[N][(N+2)%4+1] -> CRITICAL[ll1][ll2][ll3])
+													  else
+														  CRITICAL[ll1][ll2][ll3]
+	)
+	+{send_reject[1][1], send_reject[2][2], send_reject[3][3], send_reject[4][4]}
+	/{forall[i:1..4] {forall[j:1..4] {broadcast_request[i][j]/receive_request[i][j], send_permit[i]/receive_permit[i], send_reject[i][j]/receive_reject[i][j]}}}.
+			
+
+||VMEI = (WU_CAR(1) || WU_CAR(2) || WU_CAR(3) || WU_CAR(4)). // << enter[4] could lock others out
+
+assert MOVE_THROUGH = []<>exit[Cars]  //car 1 could get locked out
+
+fluent CS[i:Cars] = <enter[i], exit[i]>
+
+assert MUTEX = forall[i:1..3]forall[j:(i+1)..4][]!(CS[i] && CS[j])  //should not fail
+

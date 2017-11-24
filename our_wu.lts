@@ -47,39 +47,37 @@ STARTUP = (choose_lane[N][l:Lanes] -> CAR[0][0][0][0][0][0][0][0][l][0]), //HILI
 
 CAR[hl1:Bool][hl2:Bool][hl3:Bool][hl4:Bool][ll1:Bool][ll2:Bool][ll3:Bool][ll4:Bool][l:Lanes][count:0..3]
 			=(
-			broadcast_request[N][l][N%4+1]
-			-> broadcast_request[N][l][(N+1)%4+1]
-			-> broadcast_request[N][l][(N+2)%4+1]
-			-> WAIT_RESPONSE[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
-			  ),
-WAIT_RESPONSE[hl1:Bool][hl2:Bool][hl3:Bool][hl4:Bool][ll1:Bool][ll2:Bool][ll3:Bool][ll4:Bool][l:Lanes][count:0..3] = (
+			when (!hl1) broadcast_request[N][l][N%4+1] -> CAR[True][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]|
+			when (!hl2) broadcast_request[N][l][(N+1)%4+1] -> CAR[hl1][True][hl3][hl4][ll1][ll2][ll3][ll4][l][count]|
+			when (!hl3) broadcast_request[N][l][(N+2)%4+1] -> CAR[hl1][hl2][True][hl4][ll1][ll2][ll3][ll4][l][count]|
+
 			receive_request[c:Cars][c_l:Lanes][N] -> //if (c == N) then 
 													 //WAIT_RESPONSE[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
 												   if (c > N) then
 														(send_permit[N][c] ->
-		 											     	 if(c==1) then WAIT_RESPONSE[True][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
-															 else if(c==2) then WAIT_RESPONSE[hl1][True][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
-															 else if(c==3) then WAIT_RESPONSE[hl1][hl2][True][hl4][ll1][ll2][ll3][ll4][l][count]
-															 else if(c==4) then WAIT_RESPONSE[hl1][hl2][hl3][True][ll1][ll2][ll3][ll4][l][count]
+		 											     	 if(c==1) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
+															 else if(c==2) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
+															 else if(c==3) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
+															 else if(c==4) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
 														)
 												  else
 														 (send_reject[N][c] -> 
-															 if(c==1) then WAIT_RESPONSE[hl1][hl2][hl3][hl4][True][ll2][ll3][ll4][l][count]
-		 												 	 else if(c==2) then WAIT_RESPONSE[hl1][hl2][hl3][hl4][ll1][True][ll3][ll4][l][count]
-															 else if(c==3) then WAIT_RESPONSE[hl1][hl2][hl3][hl4][ll1][ll2][True][ll4][l][count]
-															 else if(c==4) then WAIT_RESPONSE[hl1][hl2][hl3][hl4][ll1][ll2][ll3][True][l][count]
+															 if(c==1) then CAR[hl1][hl2][hl3][hl4][True][ll2][ll3][ll4][l][count]
+		 												 	 else if(c==2) then CAR[hl1][hl2][hl3][hl4][ll1][True][ll3][ll4][l][count]
+															 else if(c==3) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][True][ll4][l][count]
+															 else if(c==4) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][True][l][count]
 														 )
 												  	 |
 
-			receive_permit[c:Cars][N] ->    if(c==1) then WAIT_RESPONSE[False][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count+1]
-											    else if(c==2) then WAIT_RESPONSE[hl1][False][hl3][hl4][ll1][ll2][ll3][ll4][l][count+1]
-												else if(c==3) then WAIT_RESPONSE[hl1][hl2][False][hl4][ll1][ll2][ll3][ll4][l][count+1]
-												else if(c==4) then WAIT_RESPONSE[hl1][hl2][hl3][False][ll1][ll2][ll3][ll4][l][count+1]
+			receive_permit[c:Cars][N] ->    if(c==1) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count+1]
+											    else if(c==2) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count+1]
+												else if(c==3) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count+1]
+												else if(c==4) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count+1]
 												|
-			receive_reject[c:Cars][N] -> if(c==1) then WAIT_RESPONSE[True][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
-										   else if(c==2) then WAIT_RESPONSE[hl1][True][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
-										   else if(c==3) then WAIT_RESPONSE[hl1][hl2][True][hl4][ll1][ll2][ll3][ll4][l][count]
-										   else if(c==4) then WAIT_RESPONSE[hl1][hl2][hl3][True][ll1][ll2][ll3][ll4][l][count]	|
+			receive_reject[c:Cars][N] -> if(c==1) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
+										   else if(c==2) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
+										   else if(c==3) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]
+										   else if(c==4) then CAR[hl1][hl2][hl3][hl4][ll1][ll2][ll3][ll4][l][count]	|
 			when (count==3) enter[N] -> CRITICAL[ll1][ll2][ll3][ll4][l] 
 
 			// time_out[1] -> WAIT_PERMISSION[hl2][hl3][hl4][ll2][ll3][ll4][l]
