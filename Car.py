@@ -2,14 +2,15 @@ import time, socket, sys
 from datetime import datetime as dt
 import paho.mqtt.client as paho
 import signal
-import mraa
+#import mraa
+import threading
 
-leds = []
-for i in range(2,10):
-    led = mraa.Gpio(i)
-    led.dir(mraa.DIR_OUT)
-    led.write(1)
-    leds.append(led)
+# leds = []
+# for i in range(2,10):
+#     led = mraa.Gpio(i)
+#     led.dir(mraa.DIR_OUT)
+#     led.write(1)
+#     leds.append(led)
 
 class Car(object):
     """docstring for Car"""
@@ -18,6 +19,7 @@ class Car(object):
         self.car_id = car_id
         self.lane_id = lane_id
         self.direction = direction
+        self.timer = threading.Timer(5.0, self.enter_critical_section)
 
         self.mqtt_client = paho.Client()
         self.mqtt_client.on_connect = self.on_connect
@@ -34,7 +36,6 @@ class Car(object):
         self.isPassing = False
 
         signal.signal(signal.SIGINT, self.control_c_handler)
-        signal.signal(signal.SIGALRM, self.enter_critical_section)
 
         self.broadcast_request()
         self.ll = []
@@ -45,7 +46,7 @@ class Car(object):
         self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'.Request')
         self.isBroadcast = True
         self.isWaiting = True
-        signal.alarm(10)
+        self.timer.start()
 
   
 
@@ -67,15 +68,17 @@ class Car(object):
                 car_id,lane_id = key.split('_')
                 # missing part
 
-                if car_id == self.car_id and (self.isWaiting or self.isPassing) :
-                    self.ll.append(car_id)
-                    print(self.car_id+'_'+car_id+'.Reject')
-                    self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+car_id+'.Reject')
+                if car_id != self.car_id and (self.isWaiting or self.isPassing) :
+                    if (self.car_id < car_id):
+                        self.ll.append(car_id)
+                        print(self.car_id+'_'+car_id+'.Reject')
+                        self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+car_id+'.Reject')
 
             if msg_content == 'Reject':
                 src,dest = key.split('_')
                 if self.isWaiting:
                     if dest == self.car_id:
+                        self.timer.cancel()
                         self.hl.append(src)
                     else:
                         # check preemption
@@ -90,15 +93,12 @@ class Car(object):
 
 
     def enter_critical_section(self):
+        print('Enter Critical Section')
         time.sleep(3)
+        print('Exiting Critical Section')
         print(self.car_id+'.Permit')
         self.mqtt_client.publish(self.mqtt_topic, self.car_id+'.Permit')
-        
-
-
-
-
-            
+        sys.exit(0)
 
 
     def on_disconnect(self, client, userdata, rc):
