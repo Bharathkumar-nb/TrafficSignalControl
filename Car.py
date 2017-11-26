@@ -12,6 +12,9 @@ import threading
 #     led.write(1)
 #     leds.append(led)
 
+# constants
+TH = 2
+
 class Car(object):
     """docstring for Car"""
     def __init__(self, car_id, lane_id, direction):
@@ -20,6 +23,8 @@ class Car(object):
         self.lane_id = lane_id
         self.direction = direction
         self.timer = threading.Timer(5.0, self.enter_critical_section)
+        self.compatible_lane = str(((int(self.lane_id)+1)%4)+1)
+        self.cnt_pmp = 0
 
         self.mqtt_client = paho.Client()
         self.mqtt_client.on_connect = self.on_connect
@@ -61,35 +66,41 @@ class Car(object):
         pass
     
     def on_message(self, client, userdata, msg):
+        # print(msg.payload)
         if len(msg.payload.split('.')) > 1:
             key, msg_content = msg.payload.split('.')
 
             if msg_content == 'Request':
                 car_id,lane_id = key.split('_')
-                # missing part
-
-                if car_id != self.car_id and (self.isWaiting or self.isPassing) :
+                
+                if (car_id != self.car_id) and ((self.isWaiting or self.isPassing) and (lane_id != self.compatible_lane or lane_id == self.lane_id)) :
+                    for (k,k_l) in self.hl:
+                        if (k_l == lane_id or str(((int(k_l)+1)%4)+1) == lane_id) and self.cnt_pmp<TH:
+                            self.hl.append((car_id,lane_id))
+                            self.cnt_pmp += 1
+                            return
                     if (self.car_id < car_id):
                         self.ll.append(car_id)
-                        print(self.car_id+'_'+car_id+'.Reject')
-                        self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+car_id+'.Reject')
+                        print(self.car_id+'_'+self.lane_id+'_'+car_id+'.Reject')
+                        self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'_'+car_id+'.Reject')
 
             if msg_content == 'Reject':
-                src,dest = key.split('_')
+                src,src_lane_id,dest = key.split('_')
                 if self.isWaiting:
                     if dest == self.car_id:
                         self.timer.cancel()
-                        self.hl.append(src)
+                        self.hl.append((src,src_lane_id))
                     else:
-                        # check preemption
                         pass
+                        
             if msg_content == 'Permit':
-                src = key
+                src,src_lane_id = key.split('_')
                 if src != self.car_id:
-                    self.hl.remove(src)
-                    if self.hl == []:
-                        self.isPassing = True
-                        self.enter_critical_section()
+                    if (src,src_lane_id) in self.hl:
+                        self.hl.remove((src,src_lane_id))
+                        if self.hl == []:
+                            self.isPassing = True
+                            self.enter_critical_section()
 
 
     def enter_critical_section(self):
@@ -97,7 +108,7 @@ class Car(object):
         time.sleep(3)
         print('Exiting Critical Section')
         print(self.car_id+'.Permit')
-        self.mqtt_client.publish(self.mqtt_topic, self.car_id+'.Permit')
+        self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'.Permit')
         sys.exit(0)
 
 
