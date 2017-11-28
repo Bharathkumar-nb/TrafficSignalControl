@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1123</width>
-    <height>904</height>
+    <width>1124</width>
+    <height>950</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,9 +21,9 @@
     <property name="geometry">
      <rect>
       <x>196</x>
-      <y>143</y>
-      <width>711</width>
-      <height>551</height>
+      <y>113</y>
+      <width>731</width>
+      <height>661</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
@@ -39,7 +39,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -64,7 +64,7 @@
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : red;</string>
+        <string notr="true">background-color : rgb(255, 208, 20);</string>
        </property>
        <property name="text">
         <string/>
@@ -83,7 +83,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -102,7 +102,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -121,7 +121,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -140,7 +140,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -159,7 +159,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -178,7 +178,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -197,7 +197,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -216,7 +216,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -235,7 +235,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -254,7 +254,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -273,7 +273,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -292,7 +292,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -311,7 +311,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -330,7 +330,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -349,7 +349,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -368,7 +368,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : rgb(85, 255, 127);</string>
+        <string notr="true">background-color : rgb(17, 170, 17);</string>
        </property>
        <property name="text">
         <string/>
@@ -387,7 +387,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -409,7 +409,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -431,7 +431,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -453,7 +453,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -475,7 +475,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -497,7 +497,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -519,7 +519,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -541,7 +541,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -563,7 +563,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -585,7 +585,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -607,7 +607,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -629,7 +629,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -651,7 +651,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -673,7 +673,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -695,7 +695,7 @@
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : grey;</string>
+        <string notr="true">background-color : rgb(65, 65, 65);</string>
        </property>
        <property name="lineWidth">
         <number>0</number>
@@ -720,7 +720,7 @@
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : red;</string>
+        <string notr="true">background-color : rgb(255, 208, 20);</string>
        </property>
        <property name="text">
         <string/>
@@ -742,7 +742,7 @@
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : red;</string>
+        <string notr="true">background-color : rgb(255, 208, 20);</string>
        </property>
        <property name="text">
         <string/>
@@ -764,7 +764,7 @@
         <bool>false</bool>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color : red;</string>
+        <string notr="true">background-color : rgb(255, 208, 20);</string>
        </property>
        <property name="text">
         <string/>
@@ -776,11 +776,11 @@
      </item>
     </layout>
    </widget>
-   <widget class="QLabel" name="label_37">
+   <widget class="QLabel" name="l1_right_car">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>790</y>
+      <x>640</x>
+      <y>850</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -798,17 +798,17 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/maruti.jpg</pixmap>
+     <pixmap>images/up.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_38">
+   <widget class="QLabel" name="l1_straight_car">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>790</y>
+      <x>580</x>
+      <y>850</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -826,17 +826,17 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/maruti.jpg</pixmap>
+     <pixmap>images/up.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_39">
+   <widget class="QLabel" name="l2_straight_car">
     <property name="geometry">
      <rect>
-      <x>1020</x>
-      <y>390</y>
+      <x>1039</x>
+      <y>389</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -854,17 +854,17 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/maruti.jpg</pixmap>
+     <pixmap>../images/left.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_40">
+   <widget class="QLabel" name="l2_right_car">
     <property name="geometry">
      <rect>
-      <x>1020</x>
-      <y>330</y>
+      <x>1039</x>
+      <y>339</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -882,17 +882,17 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/maruti.jpg</pixmap>
+     <pixmap>../images/left.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_41">
+   <widget class="QLabel" name="l3_right_car">
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>20</y>
+      <y>10</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -910,17 +910,17 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/maruti.jpg</pixmap>
+     <pixmap>../images/down.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_42">
+   <widget class="QLabel" name="l3_straight_car">
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>20</y>
+      <y>10</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -938,17 +938,17 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/maruti.jpg</pixmap>
+     <pixmap>../images/down.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_43">
+   <widget class="QLabel" name="l4_right_car">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>480</y>
+      <x>50</x>
+      <y>511</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -966,17 +966,17 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/maruti.jpg</pixmap>
+     <pixmap>../images/right.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_44">
+   <widget class="QLabel" name="l4_straight_car">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>420</y>
+      <x>50</x>
+      <y>460</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -994,17 +994,17 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/maruti.jpg</pixmap>
+     <pixmap>../images/right.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_45">
+   <widget class="QLabel" name="l1_straight_arrow">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>760</y>
+      <x>580</x>
+      <y>820</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -1022,17 +1022,17 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/straight.png</pixmap>
+     <pixmap>images/straight.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_46">
+   <widget class="QLabel" name="l1_right_arrow">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>760</y>
+      <x>640</x>
+      <y>820</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -1050,17 +1050,17 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/right_arrow.png</pixmap>
+     <pixmap>images/right_arrow.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_47">
+   <widget class="QLabel" name="l3_right_arrow">
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>50</y>
+      <y>40</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -1084,11 +1084,11 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_48">
+   <widget class="QLabel" name="l3_straight_arrow">
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>50</y>
+      <y>40</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -1112,11 +1112,11 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_49">
+   <widget class="QLabel" name="l2_straight_arrow">
     <property name="geometry">
      <rect>
-      <x>990</x>
-      <y>390</y>
+      <x>1009</x>
+      <y>389</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -1140,11 +1140,11 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_50">
+   <widget class="QLabel" name="l2_right_arrow">
     <property name="geometry">
      <rect>
-      <x>990</x>
-      <y>330</y>
+      <x>1009</x>
+      <y>339</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -1162,17 +1162,17 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/right_arrow_4.png</pixmap>
+     <pixmap>images/right_arrow_4.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_51">
+   <widget class="QLabel" name="l4_straight_arrow">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>420</y>
+      <x>80</x>
+      <y>460</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -1190,17 +1190,17 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/straight_2.png</pixmap>
+     <pixmap>images/straight_2.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_52">
+   <widget class="QLabel" name="l4_right_arrow">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>480</y>
+      <x>80</x>
+      <y>511</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -1218,7 +1218,7 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../images/right_arrow_2.png</pixmap>
+     <pixmap>images/right_arrow_2.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -1227,8 +1227,8 @@
    <widget class="QWidget" name="l1_right_turn" native="true">
     <property name="geometry">
      <rect>
-      <x>630</x>
-      <y>760</y>
+      <x>640</x>
+      <y>820</y>
       <width>31</width>
       <height>61</height>
      </rect>
@@ -1240,8 +1240,8 @@
    <widget class="QWidget" name="l1_straight" native="true">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>760</y>
+      <x>580</x>
+      <y>820</y>
       <width>31</width>
       <height>61</height>
      </rect>
@@ -1254,7 +1254,7 @@
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>20</y>
+      <y>10</y>
       <width>31</width>
       <height>61</height>
      </rect>
@@ -1267,7 +1267,7 @@
     <property name="geometry">
      <rect>
       <x>510</x>
-      <y>20</y>
+      <y>10</y>
       <width>31</width>
       <height>61</height>
      </rect>
@@ -1279,8 +1279,8 @@
    <widget class="QWidget" name="l4_right_turn" native="true">
     <property name="geometry">
      <rect>
-      <x>39</x>
-      <y>479</y>
+      <x>49</x>
+      <y>510</y>
       <width>61</width>
       <height>31</height>
      </rect>
@@ -1292,8 +1292,8 @@
    <widget class="QWidget" name="l4_straight" native="true">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>420</y>
+      <x>50</x>
+      <y>460</y>
       <width>61</width>
       <height>31</height>
      </rect>
@@ -1305,8 +1305,8 @@
    <widget class="QWidget" name="l2_right_turn" native="true">
     <property name="geometry">
      <rect>
-      <x>991</x>
-      <y>331</y>
+      <x>1010</x>
+      <y>340</y>
       <width>61</width>
       <height>31</height>
      </rect>
@@ -1318,8 +1318,8 @@
    <widget class="QWidget" name="l2_straight" native="true">
     <property name="geometry">
      <rect>
-      <x>990</x>
-      <y>390</y>
+      <x>1009</x>
+      <y>389</y>
       <width>61</width>
       <height>31</height>
      </rect>
@@ -1331,8 +1331,8 @@
    <widget class="QLabel" name="l1">
     <property name="geometry">
      <rect>
-      <x>580</x>
-      <y>710</y>
+      <x>590</x>
+      <y>770</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -1355,8 +1355,8 @@
    <widget class="QLabel" name="l2">
     <property name="geometry">
      <rect>
-      <x>910</x>
-      <y>360</y>
+      <x>929</x>
+      <y>369</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -1380,7 +1380,7 @@
     <property name="geometry">
      <rect>
       <x>460</x>
-      <y>90</y>
+      <y>80</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -1403,8 +1403,8 @@
    <widget class="QLabel" name="l4">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>450</y>
+      <x>120</x>
+      <y>480</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -1424,13 +1424,42 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <zorder>gridLayoutWidget</zorder>
+   <zorder>l1_right_car</zorder>
+   <zorder>l1_straight_car</zorder>
+   <zorder>l2_straight_car</zorder>
+   <zorder>l2_right_car</zorder>
+   <zorder>l3_right_car</zorder>
+   <zorder>l3_straight_car</zorder>
+   <zorder>l4_right_car</zorder>
+   <zorder>l4_straight_car</zorder>
+   <zorder>l1_straight_arrow</zorder>
+   <zorder>l1_right_arrow</zorder>
+   <zorder>l3_right_arrow</zorder>
+   <zorder>l3_straight_arrow</zorder>
+   <zorder>l2_straight_arrow</zorder>
+   <zorder>l2_right_arrow</zorder>
+   <zorder>l4_straight_arrow</zorder>
+   <zorder>l4_right_arrow</zorder>
+   <zorder>l1</zorder>
+   <zorder>l2</zorder>
+   <zorder>l3</zorder>
+   <zorder>l4</zorder>
+   <zorder>l1_right_turn</zorder>
+   <zorder>l1_straight</zorder>
+   <zorder>l2_straight</zorder>
+   <zorder>l2_right_turn</zorder>
+   <zorder>l3_right_turn</zorder>
+   <zorder>l3_straight</zorder>
+   <zorder>l4_right_turn</zorder>
+   <zorder>l4_straight</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1123</width>
+     <width>1124</width>
      <height>26</height>
     </rect>
    </property>

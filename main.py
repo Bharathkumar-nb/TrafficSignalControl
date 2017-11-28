@@ -20,6 +20,8 @@ class TrafficSignal(QtWidgets.QMainWindow):
         self.slots['l4'] = [[(3,0),False], [(3,1),False]]
         self.CRITICAL_SECTION = [(2,2),(2,3),(3,2),(3,3)]
         self.timers = {}
+        # car_direction is used for images
+        self.car_direction = {(-1,0):'up', (1,0):'down', (0,-1):'left', (0,1):'right'}
 
         # Setup callback fuctions
         self.ui.l1_right_turn.mouseReleaseEvent = self.init_car_l1_r
@@ -51,60 +53,60 @@ class TrafficSignal(QtWidgets.QMainWindow):
         if not success:
             return
         dst = (0,3)
-        self.init_car(src, dst, 'l1')
+        self.init_car(src, dst, 'l1','up')
 
     def init_car_l2_s(self, event):
         src, success = self.get_src(0, 1, 'l2')
         if not success:
             return
         dst = (2,0)
-        self.init_car(src, dst, 'l2')
+        self.init_car(src, dst, 'l2', 'left')
 
     def init_car_l3_s(self, event):
         src, success = self.get_src(-1, 0, 'l3')
         if not success:
             return
         dst = (5,2)
-        self.init_car(src, dst, 'l3')
+        self.init_car(src, dst, 'l3', 'down')
 
     def init_car_l4_s(self, event):
         src, success = self.get_src(0, -1, 'l4')
         if not success:
             return
         dst = (3,5)
-        self.init_car(src, dst, 'l4')
+        self.init_car(src, dst, 'l4', 'right')
 
     def init_car_l1_r(self, event):
         src, success = self.get_src(1, 0, 'l1')
         if not success:
             return
         dst = (3,5)
-        self.init_car(src, dst, 'l1')
+        self.init_car(src, dst, 'l1', 'up')
 
     def init_car_l2_r(self, event):
         src, success = self.get_src(0, 1, 'l2')
         if not success:
             return
         dst = (0,3)
-        self.init_car(src, dst, 'l2')
+        self.init_car(src, dst, 'l2', 'left')
 
     def init_car_l3_r(self, event):
         src, success = self.get_src(-1, 0, 'l3')
         if not success:
             return
         dst = (2,0)
-        self.init_car(src, dst, 'l3')
+        self.init_car(src, dst, 'l3', 'down')
         
     def init_car_l4_r(self, event):
         src, success = self.get_src(0, -1, 'l4')
         if not success:
             return
         dst = (5,2)
-        self.init_car(src, dst, 'l4')
+        self.init_car(src, dst, 'l4', 'right')
 
-    def init_car(self, src, dst, lane):
+    def init_car(self, src, dst, lane, direction):
         # update UI
-        imagepath = os.path.join(os.getcwd(), 'maruti.jpg')
+        imagepath = os.path.join(os.getcwd(), 'images', direction+'.jpg')
         pixmap = QtGui.QPixmap(imagepath)
         widget = self.ui.gridLayout.itemAtPosition(src[0],src[1]).widget()
         widget.setPixmap(pixmap)
@@ -132,7 +134,8 @@ class TrafficSignal(QtWidgets.QMainWindow):
 
     def move_car(self, src, offset_x, offset_y, lane):
         # update UI
-        imagepath = os.path.join(os.getcwd(), 'maruti.jpg')
+        direction = self.car_direction[(offset_x, offset_y)]
+        imagepath = os.path.join(os.getcwd(), 'images', direction+'.jpg')
         # 1. Clear image in current cell
         x, y = src[0],src[1]
         pixmap = QtGui.QPixmap('')
