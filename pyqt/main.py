@@ -1,4 +1,5 @@
 import sys, os, time
+import functools
 from PyQt5 import QtCore, QtGui, QtWidgets
 from signal_layout import Ui_MainWindow
 
@@ -18,6 +19,7 @@ class TrafficSignal(QtWidgets.QMainWindow):
         self.slots['l3'] = [[(0,2),False], [(1,2),False]]
         self.slots['l4'] = [[(3,0),False], [(3,1),False]]
         self.CRITICAL_SECTION = [(2,2),(2,3),(3,2),(3,3)]
+        self.timers = {}
 
         # Setup callback fuctions
         self.ui.l1_right_turn.mouseReleaseEvent = self.init_car_l1_r
@@ -142,14 +144,67 @@ class TrafficSignal(QtWidgets.QMainWindow):
         # 2. Set image in next cell
         pixmap = QtGui.QPixmap(imagepath)
         next_x, next_y = x+offset_x, y+offset_y
+
         widget = self.ui.gridLayout.itemAtPosition(next_x, next_y).widget()
         widget.setPixmap(pixmap)
         # Occupy the next slot
         self.add_slot((next_x, next_y), lane)
 
-        # 3. sleep
-        QtWidgets.QApplication.processEvents()
-        time.sleep(4)
+    def clear_car(self, pos, car_id):
+        pixmap = QtGui.QPixmap('')
+        widget = self.ui.gridLayout.itemAtPosition(pos[0], pos[1]).widget()
+        widget.setPixmap(pixmap)
+        del self.timers[car_id]
+
+    def straight(self, car_id, offset_x, offset_y, entered_critical_section, exited_critical_section):
+        src, dst, lane = self.cars[car_id]
+        if src == dst:
+            del self.timers[car_id]
+            self.timers[car_id] = QtCore.QTimer()
+            timerCallback = functools.partial(self.clear_car, pos=dst, car_id=car_id)
+            self.timers[car_id].timeout.connect(timerCallback)
+            self.timers[car_id].start(500)
+            return
+        print('L2 and L4 (straight)', src, dst)
+        self.move_car(src, offset_x, offset_y, lane)
+        self.cars[car_id][0] = (src[0]+offset_x, src[1]+offset_y)
+        if src in self.CRITICAL_SECTION:
+            entered_critical_section = True
+        elif entered_critical_section and not exited_critical_section:
+            print('Exiting Critical Section')
+            exited_critical_section = True
+        self.timers[car_id] = QtCore.QTimer()
+        timerCallback = functools.partial(self.straight, car_id=car_id, offset_x=offset_x, offset_y=offset_y, entered_critical_section=entered_critical_section, exited_critical_section=exited_critical_section)
+        self.timers[car_id].timeout.connect(timerCallback)
+        self.timers[car_id].start(1000)
+
+    def right_phase1(self, car_id, offset_x, offset_y, index):
+        src, dst, lane = self.cars[car_id]
+        self.timers[car_id] = QtCore.QTimer()
+        if src[index] != dst[index]:
+            print('L2 and L4 (before right turn)', src, dst)
+            self.move_car(src, offset_x, offset_y, lane)
+            self.cars[car_id][0] = (src[0]+offset_x, src[1]+offset_y)
+            timerCallback = functools.partial(self.right_phase1, car_id=car_id, offset_x=offset_x, offset_y=offset_y, index=index)
+            self.timers[car_id].timeout.connect(timerCallback)
+            self.timers[car_id].start(1000)
+        else:
+            # Phase 1 is done. Move straight from now on
+            offset_x, offset_y = 0, 0
+            entered_critical_section = True
+            exited_critical_section = False
+            index = 0 if index==1 else 1
+            if dst[index] in [0,1]:
+                if index == 0:
+                    offset_x = -1
+                else:
+                    offset_y = -1
+            else:
+                if index == 0:
+                    offset_x = 1
+                else:
+                    offset_y = 1
+            self.straight(car_id, offset_x, offset_y, entered_critical_section, exited_critical_section)
 
     def cross_critical_section(self, car_id):
         src, dst, lane = self.cars[car_id]
@@ -163,61 +218,33 @@ class TrafficSignal(QtWidgets.QMainWindow):
                 offset_y = 1
             else:                # L2
                 offset_y = -1
-            while src!=dst :
-                print('L2 and L4 (straight)', src, dst)
-                self.move_car(src, offset_x, offset_y, lane)
-                src = src[0]+offset_x, src[1]+offset_y
-                if src in self.CRITICAL_SECTION:
-                    entered_critical_section = True
-                elif entered_critical_section and not exited_critical_section:
-                    print('Exiting Critical Section')
-                    exited_critical_section = True
-        if src==dst:
-            return
+            self.timers[car_id] = QtCore.QTimer()
+            timerCallback = functools.partial(self.straight, car_id=car_id, offset_x=offset_x, offset_y=offset_y, entered_critical_section=entered_critical_section, exited_critical_section=exited_critical_section)
+            self.timers[car_id].timeout.connect(timerCallback)
+            self.timers[car_id].start(1000)
 
         # L1 and L3 (straight)
-        if src[1]==dst[1]:
+        elif src[1]==dst[1]:
             if src[0] in [0,1]:  # L3
                 offset_x = 1
             else:                # L1
                 offset_x = -1
-            while src!=dst :
-                print('L1 and L3 (straight)', src, dst)
-                self.move_car(src, offset_x, offset_y, lane)
-                src = src[0]+offset_x, src[1]+offset_y
-                if src in self.CRITICAL_SECTION:
-                    entered_critical_section = True
-                elif entered_critical_section and not exited_critical_section:
-                    exited_critical_section = True
-                    print('Exiting Critical Section')
-        if src==dst:
-            return
+            self.timers[car_id] = QtCore.QTimer()
+            timerCallback = functools.partial(self.straight, car_id=car_id, offset_x=offset_x, offset_y=offset_y, entered_critical_section=entered_critical_section, exited_critical_section=exited_critical_section)
+            self.timers[car_id].timeout.connect(timerCallback)
+            self.timers[car_id].start(1000)
 
         # L2 and L4 (right turn)
-        if src[0] in [2,3]:
+        elif src[0] in [2,3]:
             # [Proceed until right turn]
             if src[1] in [0,1]: # L4
                 offset_y = 1
             else:               # L2
                 offset_y = -1
-            while src[1] != dst[1]:
-                print('L2 and L4 (before right turn)', src, dst)
-                self.move_car(src, offset_x, offset_y, lane)
-                src = src[0]+offset_x, src[1]+offset_y
-            # [After making right turn]
-            offset_y = 0
-            if dst[0] in [0,1]: # L2
-                offset_x = -1
-            else:               # L4
-                offset_x = 1
-            while src!=dst :
-                print('L2 and L4 (after right turn)', src, dst)
-                self.move_car(src, offset_x, offset_y, lane)
-                src = src[0]+offset_x, src[1]+offset_y
-                if not exited_critical_section and src not in self.CRITICAL_SECTION:
-                    exited_critical_section = True
-                    print('Exiting Critical Section')
-
+            self.timers[car_id] = QtCore.QTimer()
+            timerCallback = functools.partial(self.right_phase1, car_id=car_id, offset_x=offset_x, offset_y=offset_y, index=1)
+            self.timers[car_id].timeout.connect(timerCallback)
+            self.timers[car_id].start(1000)
         # L1 and L3 (right)
         else:
             # [Proceed until right turn]
@@ -225,26 +252,10 @@ class TrafficSignal(QtWidgets.QMainWindow):
                 offset_x = 1
             else:               # L1
                 offset_x = -1
-            while src[0] != dst[0]:
-                print('L1 and L3 (before right turn)', src, dst)
-                self.move_car(src, offset_x, offset_y, lane)
-                src = src[0]+offset_x, src[1]+offset_y
-            # [After making right turn]
-            offset_x = 0
-            if dst[1] in [0,1]: # L3
-                offset_y = -1
-            else:               # L1
-                offset_y = 1
-            while src!=dst :
-                print('L1 and L3 (after right turn)', src, dst)
-                self.move_car(src, offset_x, offset_y, lane)
-                src = src[0]+offset_x, src[1]+offset_y
-                if not exited_critical_section and src not in self.CRITICAL_SECTION:
-                    exited_critical_section = True
-                    print('Exiting Critical Section')
-
-
-
+            self.timers[car_id] = QtCore.QTimer()
+            timerCallback = functools.partial(self.right_phase1, car_id=car_id, offset_x=offset_x, offset_y=offset_y, index=0)
+            self.timers[car_id].timeout.connect(timerCallback)
+            self.timers[car_id].start(1000)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
