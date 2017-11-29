@@ -1,20 +1,13 @@
 import time, socket, sys
-from datetime import datetime as dt
+# from datetime import datetime as dt
 import paho.mqtt.client as paho
-import signal
-#import mraa
 import threading
-
-# leds = []
-# for i in range(2,10):
-#     led = mraa.Gpio(i)
-#     led.dir(mraa.DIR_OUT)
-#     led.write(1)
-#     leds.append(led)
 
 # constants
 TH = 2
 NF = 2
+        
+# t = None
 
 class Car(object):
     """docstring for Car"""
@@ -22,7 +15,7 @@ class Car(object):
         self.MY_NAME = 'Car : ' + car_id
         self.car_id = car_id
         self.lane_id = lane_id
-        self.timer = threading.Timer(10.0, self.timeout_handler)
+        self.timer = threading.Timer(5.0, self.timeout_handler)
         self.compatible_lane = str(((int(self.lane_id)+1)%4)+1)
         self.cnt_pmp = 0
         self.isBroadcast = False
@@ -33,6 +26,7 @@ class Car(object):
         self.ll = []
         self.hl = []
 
+        # setup MQTT and register MQTT callback functions
         self.mqtt_client = paho.Client()
         self.mqtt_client.on_connect = self.on_connect
         self.mqtt_client.on_message = self.on_message
@@ -41,26 +35,17 @@ class Car(object):
         self.mqtt_topic = 'TrafficSignalControl/' + 'car'
         self.mqtt_client.will_set(self.mqtt_topic, '______________Will of '+self.MY_NAME+' _________________\n\n', 0, False)
         self.mqtt_client.connect('sansa.cs.uoregon.edu', '1883',keepalive=300)
-        self.mqtt_client.subscribe('TrafficSignalControl/' + 'car')
+        self.mqtt_client.subscribe('TrafficSignalControl/#')
         self.mqtt_client.loop_start()
 
-        signal.signal(signal.SIGINT, self.control_c_handler)
-
         self.broadcast_request()
-
-    # Deal with control-c
-    def control_c_handler(self, signum, frame):
-        self.mqtt_client.disconnect()
-        self.mqtt_client.loop_stop()  # waits until DISCONNECT message is sent out
-        print ("Exit")
-        sys.exit(0)
     
     # MQTT callback functions
     def on_connect(self, client, userdata, flags, rc):
         pass
     
     def on_message(self, client, userdata, msg):
-        # print('on_message: {}'.format(msg.payload))
+        # print('on_message {}: {}'.format(self.car_id, msg.payload))
         # print('Before hl: {}'.format(self.hl))
         # print('Before ll: {}'.format(self.ll))
         if self.isDone:
@@ -104,6 +89,7 @@ class Car(object):
                         self.before_critical_section()
 
             if msg_content == 'Follow':
+                print(key)
                 src, src_l, flt = key.split('_')
                 if src != self.car_id:
                     flt = flt.split(',')
@@ -122,31 +108,28 @@ class Car(object):
                             if v in self.ll:
                                 self.ll.remove(v)
                         self.hl.append(flt[-1])
+
+            if msg_content == 'Exit':
+                car_id = key
+                if self.car_id == car_id:
+                    print('Exiting Critical Section')
+                    if self.isLast:
+                        print(self.car_id+'_'+self.lane_id+'.Permit')
+                        self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'.Permit')
+                    print('Done')
+                    self.mqtt_client.disconnect()
+                    
         # print('After hl: {}'.format(self.hl))
         # print('After ll: {}'.format(self.ll))
 
     def on_disconnect(self, client, userdata, rc):
-        pass
+        print('Disconnecting')
+        self.isDone = True
+        self.mqtt_client.loop_stop()
 
     def on_log(self, client, userdata, level, buf):
         pass
         #print("log: {}".format(buf)) # only semi-useful IMHO
-
-    # LED functions
-    def turnOnLED(self):
-        led_idx = int(self.led_no)
-        leds[led_idx].write(0)
-
-    def turnOffLED(self):
-        led_idx = int(self.led_no)
-        leds[led_idx].write(1)
-
-    def blinkLED(self):
-        for x in xrange(0,30):
-            self.turnOnLED()
-            time.sleep(0.1)
-            self.turnOffLED()
-            time.sleep(0.1)
 
     # Car specific functions
     def broadcast_request(self):
@@ -161,22 +144,23 @@ class Car(object):
         self.before_critical_section()
 
     def before_critical_section(self):
+        #print(self.car_id, self.hl)
         if self.hl == []:
             self.isPassing = True
-            if len(self.ll) == 0:
+            n = min(len(self.ll),NF)
+            flt = self.car_id + '_'+self.lane_id + '_'
+            i = 0
+            del_indeces = []
+            while i<n:
+                f, f_l = self.ll[i] 
+                if f_l == self.lane_id:
+                    flt += f+'-'+f_l+','
+                    del_indeces.append(i)
+                i += 1
+            flt = flt[:-1]       # remove extra ','
+            if len(del_indeces)==0:
                 self.isLast = True
-            else:    
-                flt = self.car_id + '_'+self.lane_id + '_'
-                n = min(len(self.ll),NF)
-                i = 0
-                del_indeces = []
-                while i<n:
-                    f, f_l = self.ll[i] 
-                    if f_l == self.lane_id:
-                        flt += f+'-'+f_l+','
-                        del_indeces.append(i)
-                    i += 1
-                flt = flt[:-1]       # remove extra ','
+            else:
                 for i in del_indeces:
                     self.ll.pop(i)
                 print(flt+'.Follow')
@@ -185,25 +169,5 @@ class Car(object):
 
     def enter_critical_section(self):
         print('Enter Critical Section')
-        time.sleep(3)
-        print('Exiting Critical Section')
-        if self.isLast:
-            print(self.car_id+'_'+self.lane_id+'.Permit')
-            self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'.Permit')
-        print('Done')
-        self.isDone = True
-
-
-def main():
-    arr = sys.argv
-    if  len (arr) != 3 :
-        print ('Please enter valid input, e.g. python car.py <car_id> <lane_id>')
-        sys.exit(1)
-    if arr[2] not in '1234' or len(arr[2]) > 1:
-        print ('Please enter valid lane id between 1 to 4')
-        sys.exit(1)
-    Car(arr[1], arr[2])
-    while True:
-        time.sleep(10)
-
-main()
+        print(self.car_id+'.Enter')
+        self.mqtt_client.publish(self.mqtt_topic, self.car_id+'.Enter')
