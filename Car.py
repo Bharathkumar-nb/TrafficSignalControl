@@ -46,8 +46,8 @@ class Car(object):
     
     def on_message(self, client, userdata, msg):
         # print('on_message {}: {}'.format(self.car_id, msg.payload))
-        # print('Before hl: {}'.format(self.hl))
-        # print('Before ll: {}'.format(self.ll))
+        print('Car: {} Before hl: {}'.format(self.car_id, self.hl))
+        print('Car: {} Before ll: {}'.format(self.car_id, self.ll))
         if self.isDone:
             return
         if len(msg.payload.split('.')) > 1:
@@ -62,7 +62,7 @@ class Car(object):
                             self.cnt_pmp += 1
                             break
                     else:
-                        if (self.car_id < car_id):
+                        if (self.car_id < car_id and (self.isPassing and self.isLast)):
                             self.ll.append((car_id,lane_id))
                             print(self.car_id+'_'+self.lane_id+'_'+car_id+'_'+lane_id+'.Reject')
                             self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'_'+car_id+'_'+lane_id+'.Reject')
@@ -119,8 +119,8 @@ class Car(object):
                     print('Done')
                     self.mqtt_client.disconnect()
                     
-        # print('After hl: {}'.format(self.hl))
-        # print('After ll: {}'.format(self.ll))
+        print('Car: {} After hl: {}'.format(self.car_id, self.hl))
+        print('Car: {} After ll: {}'.format(self.car_id, self.ll))
 
     def on_disconnect(self, client, userdata, rc):
         print('Disconnecting')

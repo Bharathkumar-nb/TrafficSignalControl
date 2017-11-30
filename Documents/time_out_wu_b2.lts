@@ -50,19 +50,16 @@ CAR[hl1:Bool][hl2:Bool][hl3:Bool][ll1:Bool][ll2:Bool][ll3:Bool][hl1lane:HiLanes]
 			=(
 			when (!b) broadcast_request[N][l]-> CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][True][mr]|
 
-			receive_request[(N+0)%4+1][c_l:Lanes] ->  if ((((N+0)%4+1) > N) && (((l+1)%4)+1 != c_l)) then 
-														 if b && !((hl1 && (c_l==hl1lane || (((hl1lane+1)%4)+1 == c_l))) || (hl2 && (c_l==hl2lane || (((hl2lane+1)%4)+1 == c_l))) || (hl3 && (c_l==hl3lane || (((hl3lane+1)%4)+1 == c_l)))) then (send_reject[N][(N+0)%4+1][l] -> CAR[hl1][hl2][hl3][True][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr])
-															 else (send_permit[N] -> CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr])
+			receive_request[(N+0)%4+1][c_l:Lanes] ->  if ((((N+0)%4+1) > N) && (((l+1)%4)+1 != c_l) && (b && !((hl1 && (c_l==hl1lane || (((hl1lane+1)%4)+1 == c_l))) || (hl2 && (c_l==hl2lane || (((hl2lane+1)%4)+1 == c_l))) || (hl3 && (c_l==hl3lane || (((hl3lane+1)%4)+1 == c_l)))))) then (send_reject[N][(N+0)%4+1][l] -> CAR[hl1][hl2][hl3][True][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr])
+															 //else (log[N] -> send_permit[N] -> CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr])
 													  else
 														  CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr]|
-			receive_request[(N+1)%4+1][c_l:Lanes] ->  if ((((N+1)%4+1) > N) && (((l+1)%4)+1 != c_l)) then
-														 if b && !((hl1 && (c_l==hl1lane || (((hl1lane+1)%4)+1 == c_l))) || (hl2 && (c_l==hl2lane || (((hl2lane+1)%4)+1 == c_l))) || (hl3 && (c_l==hl3lane || (((hl3lane+1)%4)+1 == c_l))))  then (send_reject[N][(N+1)%4+1][l] -> CAR[hl1][hl2][hl3][ll1][True][ll3][hl1lane][hl2lane][hl3lane][l][b][mr])
-															 else (send_permit[N] -> CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr])
+			receive_request[(N+1)%4+1][c_l:Lanes] ->  if ((((N+1)%4+1) > N) && (((l+1)%4)+1 != c_l) && (b && !((hl1 && (c_l==hl1lane || (((hl1lane+1)%4)+1 == c_l))) || (hl2 && (c_l==hl2lane || (((hl2lane+1)%4)+1 == c_l))) || (hl3 && (c_l==hl3lane || (((hl3lane+1)%4)+1 == c_l))))))  then (send_reject[N][(N+1)%4+1][l] -> CAR[hl1][hl2][hl3][ll1][True][ll3][hl1lane][hl2lane][hl3lane][l][b][mr])
+															 //else (log[N] -> send_permit[N] -> CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr])
 													  else
 														  CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr]|
-			receive_request[(N+2)%4+1][c_l:Lanes] ->  if ((((N+2)%4+1) > N) && (((l+1)%4)+1 != c_l)) then
-														 if b && !((hl1 && (c_l==hl1lane || (((hl1lane+1)%4)+1 == c_l))) || (hl2 && (c_l==hl2lane || (((hl2lane+1)%4)+1 == c_l))) || (hl3 && (c_l==hl3lane || (((hl3lane+1)%4)+1 == c_l))))  then (send_reject[N][(N+2)%4+1][l] -> CAR[hl1][hl2][hl3][ll1][ll2][True][hl1lane][hl2lane][hl3lane][l][b][mr])
-															 else (send_permit[N] -> CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr])
+			receive_request[(N+2)%4+1][c_l:Lanes] ->  if ((((N+2)%4+1) > N) && (((l+1)%4)+1 != c_l) && (b && !((hl1 && (c_l==hl1lane || (((hl1lane+1)%4)+1 == c_l))) || (hl2 && (c_l==hl2lane || (((hl2lane+1)%4)+1 == c_l))) || (hl3 && (c_l==hl3lane || (((hl3lane+1)%4)+1 == c_l))))))  then (send_reject[N][(N+2)%4+1][l] -> CAR[hl1][hl2][hl3][ll1][ll2][True][hl1lane][hl2lane][hl3lane][l][b][mr])
+															 //else (log[N] -> send_permit[N] -> CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr])
 													  else
 														  CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr]|
 
@@ -70,32 +67,40 @@ CAR[hl1:Bool][hl2:Bool][hl3:Bool][ll1:Bool][ll2:Bool][ll3:Bool][hl1lane:HiLanes]
 			when (b && (((N+1)%4)+1 < N)) receive_permit[(N+1)%4+1] ->    CAR[hl1][False][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr] |
 			when (b && (((N+2)%4)+1 < N)) receive_permit[(N+2)%4+1] ->    CAR[hl1][hl2][False][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr] |
 
-			when (b && (((N+0)%4)+1 < N)) receive_reject[(N+0)%4+1][N][rl:Lanes] ->  log1[rl] ->   CAR[True][hl2][hl3][ll1][ll2][ll3][rl][hl2lane][hl3lane][l][b][True] |
-			when (b && (((N+1)%4)+1 < N)) receive_reject[(N+1)%4+1][N][rl:Lanes] ->  log2[rl] ->   CAR[hl1][True][hl3][ll1][ll2][ll3][hl1lane][rl][hl3lane][l][b][True] |
-			when (b && (((N+2)%4)+1 < N)) receive_reject[(N+2)%4+1][N][rl:Lanes] ->  log3[rl] -> CAR[hl1][hl2][True][ll1][ll2][ll3][hl1lane][hl2lane][rl][l][b][True] |
+			when (b && (((N+0)%4)+1 < N)) receive_reject[(N+0)%4+1][N][rl:Lanes] ->  CAR[True][hl2][hl3][ll1][ll2][ll3][rl][hl2lane][hl3lane][l][b][True] |
+			when (b && (((N+1)%4)+1 < N)) receive_reject[(N+1)%4+1][N][rl:Lanes] ->  CAR[hl1][True][hl3][ll1][ll2][ll3][hl1lane][rl][hl3lane][l][b][True] |
+			when (b && (((N+2)%4)+1 < N)) receive_reject[(N+2)%4+1][N][rl:Lanes] ->  CAR[hl1][hl2][True][ll1][ll2][ll3][hl1lane][hl2lane][rl][l][b][True] |
+
+			when (!b && (((N+0)%4)+1 < N)) receive_permit[(N+0)%4+1] ->    CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr] |
+			when (!b && (((N+1)%4)+1 < N)) receive_permit[(N+1)%4+1] ->    CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr] |
+			when (!b && (((N+2)%4)+1 < N)) receive_permit[(N+2)%4+1] ->    CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][hl3lane][l][b][mr] |
+
+			when (!b && (((N+0)%4)+1 < N)) receive_reject[(N+0)%4+1][N][rl:Lanes] ->  CAR[hl1][hl2][hl3][ll1][ll2][ll3][rl][hl2lane][hl3lane][l][b][mr] |
+			when (!b && (((N+1)%4)+1 < N)) receive_reject[(N+1)%4+1][N][rl:Lanes] ->  CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][rl][hl3lane][l][b][mr] |
+			when (!b && (((N+2)%4)+1 < N)) receive_reject[(N+2)%4+1][N][rl:Lanes] ->  CAR[hl1][hl2][hl3][ll1][ll2][ll3][hl1lane][hl2lane][rl][l][b][mr] |
 
 			when (b && mr && !hl1 && !hl2 && !hl3) enter[N] -> CRITICAL[ll1][ll2][ll3][l] |
 			when (b && !mr && !hl1 && !hl2 && !hl3) time_out[N] -> enter[N] -> CRITICAL[ll1][ll2][ll3][l]
 		),
 CRITICAL[ll1:Bool][ll2:Bool][ll3:Bool][l:Lanes] = (
-		 	exit[N] -> if(ll1 || ll2 || ll3) then (send_permit[N] -> STARTUP[True])
-					   else  STARTUP[True] |
+		 	exit[N] -> if(ll1 || ll2 || ll3) then (send_permit[N] -> STARTUP[False])
+					   else  STARTUP[False] |
 			go_slow[N] -> CRITICAL[ll1][ll2][ll3][l] |
 			receive_request[(N+0)%4+1][c_l:Lanes] ->  /*log[N][(N+0)%4+1] -> */if (((((N+0)%4)+1) > N) && ((l+1)%4+1 != c_l))  then
-														 (/*log_inside[N][(N+0)%4+1] -> */send_reject[N][(N+0)%4+1][l] -> CRITICAL[ll1][ll2][ll3][l])
+														 (/*log_inside[N][(N+0)%4+1] -> */send_reject[N][(N+0)%4+1][l] -> CRITICAL[True][ll2][ll3][l])
 													  else
 														  CRITICAL[ll1][ll2][ll3][l]|
 			receive_request[(N+1)%4+1][c_l:Lanes] ->  /*log[N][(N+1)%4+1] -> */if (((((N+1)%4)+1) > N) && ((l+1)%4+1 != c_l))  then
-														 (/*log_inside[N][(N+1)%4+1] -> */send_reject[N][(N+1)%4+1][l] -> CRITICAL[ll1][ll2][ll3][l])
+														 (/*log_inside[N][(N+1)%4+1] -> */send_reject[N][(N+1)%4+1][l] -> CRITICAL[ll1][True][ll3][l])
 													  else
 														  CRITICAL[ll1][ll2][ll3][l]|
 			receive_request[(N+2)%4+1][c_l:Lanes] ->  /*log[N][(N+2)%4+1] -> */if (((((N+2)%4)+1) > N) && ((l+1)%4+1 != c_l))  then
-														 (/*log_inside[N][(N+2)%4+1] -> */send_reject[N][(N+2)%4+1][l] -> CRITICAL[ll1][ll2][ll3][l])
+														 (/*log_inside[N][(N+2)%4+1] -> */send_reject[N][(N+2)%4+1][l] -> CRITICAL[ll1][ll2][True][l])
 													  else
 														  CRITICAL[ll1][ll2][ll3][l]
 	)
 	+{send_reject[1][1][Lanes], send_reject[2][2][Lanes], send_reject[3][3][Lanes], send_reject[4][4][Lanes]}
-	/{forall[i:1..4] {forall[j:1..4] {broadcast_request[i][j]/receive_request[i][j], send_permit[i]/receive_permit[i], send_reject[i][j][Lanes]/receive_reject[i][j][Lanes]}}}.
+	/{forall[i:1..4] {forall[j:1..4] {broadcast_request[i][j]/receive_request[i][j], send_permit[i]/receive_permit[i], forall [k:Lanes] {send_reject[i][j][k]/receive_reject[i][j][k]}}}}.
 			
 
 ||VMEI = (WU_CAR(1) || WU_CAR(2) || WU_CAR(3) || WU_CAR(4)). // << enter[4] could lock others out
