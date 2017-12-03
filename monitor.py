@@ -106,7 +106,6 @@ class Monitor(object):
         if len(x_axis)>0:
             start = x_axis[0]
             end = max(end, x_axis[-1])
-        print(start, end)
         ax1.set_xticks([i for i in range(start, end+1)])
         ax1.set_yticks([i for i in range(y_0, y_1+1)])
         ax1.set_xlim([start, end])
@@ -118,7 +117,7 @@ class Monitor(object):
 
 
     def init_graph(self):
-        fig = plt.figure(figsize=(10,10))
+        fig = plt.figure(figsize=(8,8))
         ax1 = fig.add_subplot(211)
         ax1.set_xlabel('Time')
         ax1.set_ylabel('No of Cars in CS', color='g')
@@ -127,7 +126,7 @@ class Monitor(object):
         ax2.set_xlabel('Time')
         ax2.set_ylabel('Avg wait time', color='b')
 
-        ani1 = animation.FuncAnimation(fig, self.update_avg_waiting_time,  fargs=(ax2, 0, 20), blit=False, interval=1000, repeat=True)
+        ani1 = animation.FuncAnimation(fig, self.update_avg_waiting_time,  fargs=(ax2, 0, 10), blit=False, interval=1000, repeat=True)
         ani2 = animation.FuncAnimation(fig, self.animate,  fargs=(ax1, self.x_axis_cars_in_CS, self.y_axis_cars_in_CS, 0, 5), blit=False, interval=1000, repeat=True)
 
         ax1.autoscale(False)

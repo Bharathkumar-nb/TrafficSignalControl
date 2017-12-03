@@ -66,7 +66,7 @@ class Car(object):
                     else:
                         #if (self.car_id < car_id and (self.isPassing and self.isLast)):
                         #if (self.car_id < car_id):
-                        if (self.timestamp < timestamp):
+                        if (self.timestamp < timestamp and ((self.isPassing and self.isLast) or self.isWaiting)):
                             self.ll.append((car_id,lane_id))
                             print(self.car_id+'_'+self.lane_id+'_'+car_id+'_'+lane_id+'.Reject')
                             self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'_'+car_id+'_'+lane_id+'.Reject')
@@ -172,6 +172,7 @@ class Car(object):
             self.enter_critical_section()
 
     def enter_critical_section(self):
+    	self.isWaiting = False
         print('Enter Critical Section')
         print(self.car_id+'.Enter')
         self.mqtt_client.publish(self.mqtt_topic, self.car_id+'.Enter')
