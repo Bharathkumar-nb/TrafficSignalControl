@@ -9,6 +9,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from signal_layout import Ui_MainWindow
 from Car import Car
 import thread
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 class TrafficSignal(QtWidgets.QMainWindow):
     """docstring for TrafficSignal"""
@@ -28,6 +30,11 @@ class TrafficSignal(QtWidgets.QMainWindow):
         self.CRITICAL_SECTION = [(2,2),(2,3),(3,2),(3,3)]
         # car_direction is used for images
         self.car_direction = {(-1,0):'up', (1,0):'down', (0,-1):'left', (0,1):'right'}
+
+        # Realtime graph variables init
+        self.x_axis = []
+        self.y_axis = []
+        self.counter = 0
 
         # Setup callback fuctions
         self.ui.l1_right_turn.mouseReleaseEvent = self.init_car_l1_r
@@ -52,6 +59,7 @@ class TrafficSignal(QtWidgets.QMainWindow):
         self.mqtt_client.loop_start()
 
         signal.signal(signal.SIGINT, self.control_c_handler)
+        thread.start_new_thread(self.send_car_count, ())
 
     # Deal with control-c
     def control_c_handler(self, signum, frame):
@@ -299,6 +307,17 @@ class TrafficSignal(QtWidgets.QMainWindow):
                 offset_x = -1
             time.sleep(1)
             self.right_phase1(car_id, offset_x, offset_y, 0)
+
+    def send_car_count(self):
+        while True:
+            car_count = 0
+            for (x,y) in self.CRITICAL_SECTION:
+                widget = self.ui.gridLayout.itemAtPosition(x, y).widget()
+                if widget.pixmap() != None and not widget.pixmap().isNull():
+                    car_count += 1
+            print('{}.Count'.format(car_count))
+            self.mqtt_client.publish(self.mqtt_topic, '{}.Count'.format(car_count))
+            time.sleep(1)
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

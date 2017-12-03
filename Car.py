@@ -25,6 +25,8 @@ class Car(object):
         self.isDone = False
         self.ll = []
         self.hl = []
+        self.timestamp = str(int(time.time()*100))
+        
 
         # setup MQTT and register MQTT callback functions
         self.mqtt_client = paho.Client()
@@ -54,7 +56,7 @@ class Car(object):
             key, msg_content = msg.payload.split('.')
 
             if msg_content == 'Request':
-                car_id,lane_id = key.split('_')
+                car_id,lane_id,timestamp = key.split('_')
                 if (car_id != self.car_id) and ((self.isWaiting or self.isPassing) and (lane_id != self.compatible_lane or lane_id == self.lane_id)) :
                     for (k,k_l) in self.hl:
                         if (k_l == lane_id or str(((int(k_l)+1)%4)+1) == lane_id) and self.cnt_pmp<TH:
@@ -62,7 +64,9 @@ class Car(object):
                             self.cnt_pmp += 1
                             break
                     else:
-                        if (self.car_id < car_id and (self.isPassing and self.isLast)):
+                        #if (self.car_id < car_id and (self.isPassing and self.isLast)):
+                        #if (self.car_id < car_id):
+                        if (self.timestamp < timestamp):
                             self.ll.append((car_id,lane_id))
                             print(self.car_id+'_'+self.lane_id+'_'+car_id+'_'+lane_id+'.Reject')
                             self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'_'+car_id+'_'+lane_id+'.Reject')
@@ -133,8 +137,8 @@ class Car(object):
 
     # Car specific functions
     def broadcast_request(self):
-        print(self.car_id+'_'+self.lane_id+'.Request')
-        self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'.Request')
+        print(self.car_id+'_'+self.lane_id+'_'+self.timestamp+'.Request')
+        self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'_'+self.timestamp+'.Request')
         self.isBroadcast = True
         self.isWaiting = True
         self.timer.start()
