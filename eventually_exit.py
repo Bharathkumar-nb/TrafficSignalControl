@@ -27,6 +27,8 @@ class Exit(object):
         self.mqtt_client.connect('sansa.cs.uoregon.edu', '1883',keepalive=300)
         self.mqtt_client.subscribe([('TrafficSignalControl/car', 0),('TrafficSignalControl/gui', 0)])
         self.mqtt_client.loop_start()
+        
+        signal.signal(signal.SIGINT, self.control_c_handler)
 
     # Deal with control-c
     def control_c_handler(self, signum, frame):

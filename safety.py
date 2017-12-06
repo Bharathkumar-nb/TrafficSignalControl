@@ -28,6 +28,8 @@ class Safety(object):
         self.mqtt_client.subscribe([('TrafficSignalControl/car', 0),('TrafficSignalControl/gui', 0)])
         self.mqtt_client.loop_start()
 
+        signal.signal(signal.SIGINT, self.control_c_handler)
+
     # Deal with control-c
     def control_c_handler(self, signum, frame):
         self.mqtt_client.disconnect()
@@ -75,7 +77,7 @@ class Safety(object):
         #print("log: {}".format(buf)) # only semi-useful IMHO
 
     def check_compatible_lanes(self, lane1, lane2):
-        return lane1==lane2 or ((int(lane1)+1)%4+1)==lane2
+        return lane1==lane2 or ((int(lane1)+1)%4+1)==int(lane2)
 
     # LED functions
     def turnOnLED(self, led_no):
