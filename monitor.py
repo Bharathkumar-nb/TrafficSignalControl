@@ -57,13 +57,14 @@ class Monitor(object):
                 self.counter_1 += 1
             if msg_content == 'Request':
                 car_id,lane_id,timestamp = key.split('_')
-                self.cars[car_id] = [self.counter_2, -1, 0]
+                self.cars[car_id] = [self.counter_2, 0, 0, False]
             if msg_content == 'Enter':
                 car_id = key
                 self.cars[car_id][1] = self.counter_2
+                self.cars[car_id][3] = True
             if msg_content == 'Exit':
                 car_id = key
-                print(car_id, self.cars)
+                print('{}.Exit'.format(car_id))
                 self.cars[car_id][2] = self.counter_2
                 
 
@@ -79,23 +80,27 @@ class Monitor(object):
 
     def update_avg_waiting_time(self, frameno, ax1, y_0, y_1):
         self.counter_2 += 1
-        total = 0
+        total = 0.0
         count = 0
-        for (s,e,i) in self.cars.values():
-            if e>0:
-                total += e-s
-                count += 1
+        for key in self.cars.keys():
+            if not self.cars[key][3] :
+                self.cars[key][1] = self.counter_2
+            total += self.cars[key][1] - self.cars[key][0]
+            count += 1
         if len(self.x_axis_waiting_time)>self.WINDOW:
             self.x_axis_waiting_time.pop(0)
             self.y_axis_waiting_time.pop(0)
-        self.x_axis_waiting_time.append(self.counter_1)
-        self.y_axis_waiting_time.append(total/count if count>0 else 0)
+        avg = total/float(count) if count>0 else 0.0
+        print('Avg: {}'.format(avg))
+        self.x_axis_waiting_time.append(self.counter_2)
+        self.y_axis_waiting_time.append(avg)
 
         for key in self.cars.keys():
             exit_time = self.cars[key][2]
-            if self.counter_2 - exit_time > (5*self.WINDOW):
+            if (self.counter_2 - exit_time) > (5*self.WINDOW):
                 print('del', key)
                 del self.cars[key]
+        print(self.cars)
         self.animate(frameno, ax1, self.x_axis_waiting_time, self.y_axis_waiting_time, y_0, y_1)
 
 
@@ -107,7 +112,7 @@ class Monitor(object):
             start = x_axis[0]
             end = max(end, x_axis[-1])
         ax1.set_xticks([i for i in range(start, end+1)])
-        ax1.set_yticks([i for i in range(y_0, y_1+1)])
+        ax1.set_yticks(map(float, range(y_0, y_1+1)))
         ax1.set_xlim([start, end])
         ax1.set_ylim([y_0, y_1])
         # ax = plt.gca()

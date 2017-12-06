@@ -315,7 +315,7 @@ class TrafficSignal(QtWidgets.QMainWindow):
                 widget = self.ui.gridLayout.itemAtPosition(x, y).widget()
                 if widget.pixmap() != None and not widget.pixmap().isNull():
                     car_count += 1
-            print('{}.Count'.format(car_count))
+            # print('{}.Count'.format(car_count))
             self.mqtt_client.publish(self.mqtt_topic, '{}.Count'.format(car_count))
             time.sleep(1)
 
