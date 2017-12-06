@@ -3,8 +3,8 @@ import paho.mqtt.client as paho
 import threading
 
 # constants
-TH = 2
-NF = 2
+TH = 1
+NF = 1
         
 # t = None
 
@@ -22,8 +22,8 @@ class Car(object):
         self.isPassing = False
         self.isLast = False
         self.isDone = False
-        self.ll = []
-        self.hl = []
+        self.ll = set()
+        self.hl = set()
         self.timestamp = str(int(time.time()*100))
         
 
@@ -59,14 +59,19 @@ class Car(object):
                 if (car_id != self.car_id) and ((self.isWaiting or self.isPassing) and (lane_id != self.compatible_lane or lane_id == self.lane_id)) :
                     for (k,k_l) in self.hl:
                         if (k_l == lane_id or str(((int(k_l)+1)%4)+1) == lane_id) and self.cnt_pmp<TH:
-                            self.hl.append((car_id,lane_id))
+                            self.hl.add((car_id,lane_id))
                             self.cnt_pmp += 1
                             break
+                        else:
+                            if (self.timestamp < timestamp and ((self.isPassing and self.isLast) or self.isWaiting)):
+                                self.ll.add((car_id,lane_id))
+                                print(self.car_id+'_'+self.lane_id+'_'+car_id+'_'+lane_id+'.Reject')
+                                self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'_'+car_id+'_'+lane_id+'.Reject')
                     else:
                         #if (self.car_id < car_id and (self.isPassing and self.isLast)):
                         #if (self.car_id < car_id):
                         if (self.timestamp < timestamp and ((self.isPassing and self.isLast) or self.isWaiting)):
-                            self.ll.append((car_id,lane_id))
+                            self.ll.add((car_id,lane_id))
                             print(self.car_id+'_'+self.lane_id+'_'+car_id+'_'+lane_id+'.Reject')
                             self.mqtt_client.publish(self.mqtt_topic, self.car_id+'_'+self.lane_id+'_'+car_id+'_'+lane_id+'.Reject')
 
@@ -75,7 +80,7 @@ class Car(object):
                 if self.isWaiting:
                     if dst == self.car_id:
                         self.timer.cancel()
-                        self.hl.append((src,src_lane_id))
+                        self.hl.add((src,src_lane_id))
                     else:
                         if (dst,dst_lane_id) in self.hl and \
                             (self.lane_id==src_lane_id or src_lane_id==self.compatible_lane or \
@@ -110,7 +115,7 @@ class Car(object):
                                 self.hl.remove(v)
                             if v in self.ll:
                                 self.ll.remove(v)
-                        self.hl.append(flt[-1])
+                        self.hl.add(flt[-1])
 
             if msg_content == 'Exit':
                 car_id = key
@@ -148,24 +153,22 @@ class Car(object):
 
     def before_critical_section(self):
         #print(self.car_id, self.hl)
-        if self.hl == []:
+        if self.hl == set():
             self.isPassing = True
             n = min(len(self.ll),NF)
             flt = self.car_id + '_'+self.lane_id + '_'
-            i = 0
-            del_indeces = []
-            while i<n:
-                f, f_l = self.ll[i] 
+            del_entries = []
+            for f, f_l in self.ll:
                 if f_l == self.lane_id:
                     flt += f+'-'+f_l+','
-                    del_indeces.append(i)
-                i += 1
+                    del_entries.append((f, f_l))
+            
             flt = flt[:-1]       # remove extra ','
-            if len(del_indeces)==0:
+            if len(del_entries)==0:
                 self.isLast = True
             else:
-                for i in del_indeces:
-                    self.ll.pop(i)
+                for i in del_entries:
+                    self.ll.remove(i)
                 print(flt+'.Follow')
                 self.mqtt_client.publish(self.mqtt_topic, flt+'.Follow')
             self.enter_critical_section()
