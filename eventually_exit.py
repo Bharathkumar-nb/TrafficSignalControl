@@ -2,6 +2,7 @@ import time, socket, sys
 import signal
 import paho.mqtt.client as paho
 import mraa
+import threading
 
 # Init LEDs
 leds = []
