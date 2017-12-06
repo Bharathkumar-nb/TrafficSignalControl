@@ -70,3 +70,9 @@ class Exit(object):
 
     def turnOffLED(self, led_no):
         leds[led_no].write(1)
+
+
+if __name__ == '__main__':
+    Exit()
+    while True:
+        time.sleep(10)
